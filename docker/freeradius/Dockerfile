@@ -1,4 +1,4 @@
-# Build an IPSec VPN Container
+# Build an RADIUS service container
 
 FROM ubuntu:cosmic
 
@@ -15,11 +15,11 @@ RUN apt-get -y install apt-utils
 
 # Install build tools & libraries
 RUN apt-get -y install base \
-            autotools-dev   \
+# autotools-dev   \
+            build-essential \
             autoconf    \
             automake \
             libtool \
-            build-essential \
             git \
             net-tools \
             ca-certificates \
@@ -31,12 +31,13 @@ RUN apt-get -y install base \
             libtalloc-dev   \
             libkqueue-dev   \
             libmariadbclient-dev    \
-            libmariadb-dev  \
-            devscripts   \
-            quilt   \
-            debhelper   \
-            fakeroot   \
-            equivs  
+            libmariadb-dev
+
+# devscripts   \
+# quilt   \
+# debhelper   \
+# fakeroot   \
+# equivs  
 
 RUN apt-get -y install linux-headers-generic
 
@@ -85,7 +86,8 @@ RUN /etc/raddb/certs/bootstrap && \
 ADD ./scripts/start.sh /start.sh
 ADD ./scripts/wait-for.sh /wait-for.sh
 
-RUN chmod +x /start.sh wait-for.sh
+RUN chmod +x /start.sh 
+RUN chmod +x /wait-for.sh
 
 # VOLUME \
 #     /opt/db/ \
