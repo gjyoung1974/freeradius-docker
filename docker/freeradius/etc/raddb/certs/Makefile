@@ -46,7 +46,9 @@ passwords.mk: server.cnf ca.cnf client.cnf
 #
 ######################################################################
 dh:
-	openssl gendh -out dh -2 $(DH_KEY_SIZE)
+# 	openssl gendh -out dh -2 $(DH_KEY_SIZE)
+	openssl dhparam -out dh $(DH_KEY_SIZE) || \
+		die "Failed to build DH params"
 
 ######################################################################
 #
