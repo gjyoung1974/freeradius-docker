@@ -87,15 +87,17 @@ ADD ./scripts/wait-for.sh /wait-for.sh
 
 RUN chmod +x /start.sh wait-for.sh
 
-# CMD ["/start.sh"]
-
 # VOLUME \
 #     /opt/db/ \
 #     /etc/freeradius/certs
 
-# EXPOSE \
-#     1812/udp \
-#     1813/udp \
-#     18120
+EXPOSE \
+    1812/udp \
+    1813/udp \
+    18120
+
+CMD ["/start.sh"]
 
 # CMD ["radiusd","-xx","-f"]
+
+# 
