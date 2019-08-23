@@ -15,36 +15,29 @@ RUN apt-get -y install apt-utils
 
 # Install build tools & libraries
 RUN apt-get -y install base \
-# autotools-dev   \
+            net-tools \
+            openssl \
             build-essential \
             autoconf    \
             automake \
             libtool \
             git \
-            net-tools \
             ca-certificates \
-            curl \
             libcurl4-openssl-dev \
-            openssl \
             libssl-dev \ 
-            bzip2   \   
             libtalloc-dev   \
             libkqueue-dev   \
             libmariadbclient-dev    \
-            libmariadb-dev
+            libmariadb-dev \
+            linux-headers-generic
 
-# devscripts   \
-# quilt   \
-# debhelper   \
-# fakeroot   \
-# equivs  
-
-RUN apt-get -y install linux-headers-generic
-
+# clone FreeRadius and select the v3.0.x branch
 RUN git clone https://github.com/FreeRADIUS/freeradius-server.git &&    \
     cd freeradius-server && git checkout v3.0.x
 
-RUN cd ./freeradius-server && ./configure --enable-developer &&  \
+# Compile it
+RUN cd ./freeradius-server && ./configure  &&  \
+            # --enable-developer &&  \
             make &&  \
             make install
 
@@ -59,7 +52,17 @@ RUN apt-get -y remove base \
             libcurl4-openssl-dev \
             libssl-dev  \
             libtalloc-dev   \
-            libkqueue-dev
+            libkqueue-dev   \
+            automake \
+            libtool \
+            git \
+            libcurl4-openssl-dev \
+            libssl-dev \ 
+            libtalloc-dev   \
+            libkqueue-dev   \
+            libmariadbclient-dev    \
+            libmariadb-dev  \
+            linux-headers-generic
 
 RUN apt -y autoremove
 
@@ -75,7 +78,7 @@ ENV RAD_CLIENTS=10.0.0.0/24
 ENV RAD_DEBUG=no
 
 RUN addgroup radius
-# RUN adduser radius radius
+RUN adduser radius radius
 
 ADD --chown=root:radius ./etc/raddb/ /etc/raddb
 
