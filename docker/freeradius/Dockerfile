@@ -1,17 +1,66 @@
+# Build an IPSec VPN Container
+
 FROM ubuntu:cosmic
 
 LABEL MAINTAINER="Gordon Young <gjyoung1974@gmail.com>"
+LABEL ORG="com.goyoung.cloud.util.vpn.radius"
+LABEL PROJECT="radius"
 
-# Image details
-LABEL org.goyoung.name="goyoung" \
-      org.goyoung.description="Dockerize FreeRadius" \
-      org.goyoung.url="https://github.com/gjyoung1974" \
-      org.goyoung.vcs-type="Git" \
-      org.goyoung.version="1.4.3" \
-      org.goyoung.radius.version="3.0.17-r5"
+RUN mkdir -p /freeradius
+WORKDIR /freeradius
 
-RUN apt-get -y update && apt-get upgrade 
-RUN apt-get -y install freeradius freeradius-mysql openssl
+# Get current:
+RUN apt-get -y update
+RUN apt-get -y install apt-utils
+
+# Install build tools & libraries
+RUN apt-get -y install base \
+            autotools-dev   \
+            autoconf    \
+            automake \
+            libtool \
+            build-essential \
+            git \
+            net-tools \
+            ca-certificates \
+            curl \
+            libcurl4-openssl-dev \
+            openssl \
+            libssl-dev \ 
+            bzip2   \   
+            libtalloc-dev   \
+            libkqueue-dev   \
+            libmariadbclient-dev    \
+            libmariadb-dev  \
+            devscripts   \
+            quilt   \
+            debhelper   \
+            fakeroot   \
+            equivs  
+
+RUN apt-get -y install linux-headers-generic
+
+RUN git clone https://github.com/FreeRADIUS/freeradius-server.git &&    \
+    cd freeradius-server && git checkout v3.0.x
+
+RUN cd ./freeradius-server && ./configure --enable-developer &&  \
+            make &&  \
+            make install
+
+# clean up
+RUN rm -rf ./freeradius-server
+
+# remove compilers and development libraries
+RUN apt-get -y remove base \
+            build-essential \
+            autotools-dev   \
+            autoconf    \
+            libcurl4-openssl-dev \
+            libssl-dev  \
+            libtalloc-dev   \
+            libkqueue-dev
+
+RUN apt -y autoremove
 
 EXPOSE 1812/udp 1813/udp
 
@@ -38,4 +87,15 @@ ADD ./scripts/wait-for.sh /wait-for.sh
 
 RUN chmod +x /start.sh wait-for.sh
 
-CMD ["/start.sh"]
+# CMD ["/start.sh"]
+
+# VOLUME \
+#     /opt/db/ \
+#     /etc/freeradius/certs
+
+# EXPOSE \
+#     1812/udp \
+#     1813/udp \
+#     18120
+
+# CMD ["radiusd","-xx","-f"]
