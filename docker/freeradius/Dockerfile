@@ -77,8 +77,10 @@ ENV RADIUS_KEY=testing123
 ENV RAD_CLIENTS=10.0.0.0/24
 ENV RAD_DEBUG=no
 
-RUN addgroup radius
-RUN adduser radius radius
+#TODO: review this:
+RUN addgroup radius && \
+    adduser --disabled-password --gecos "" radius && \
+    usermod -aG radius radius
 
 ADD --chown=root:radius ./etc/raddb/ /etc/raddb
 
